@@ -16,9 +16,6 @@ local gfx <const> = playdate.graphics
 local playerSize = 10
 local playerVelocity = 3
 local playerX, playerY = 200, 120
-local playerDir = 0;
-local xVelocity,yVelocity = 0, 0
-local dir = 0
 
 -- Drawing player image
 local playerImage = gfx.image.new(32, 32)
@@ -54,34 +51,23 @@ end
 function playdate.update()
     -- Clear screen
     gfx.clear()
-    
-    -- Get Input from Dpad
-    local iLeft = playdate.buttonJustPressed("left")
-    local iRight = playdate.buttonJustPressed("right")
-    local iDown = playdate.buttonJustPressed("down")
-    local iUp = playdate.buttonJustPressed("up")
-
-    -- Calculate velocity from inputs
-    if(iDown) then
-        dir = 0
-        yVelocity = playerVelocity
-    elseif(iLeft) then
-        dir = 1
-        xVelocity = -playerVelocity
-    elseif(iUp) then
-        dir = 2
-        yVelocity = -playerVelocity
-    elseif(iRight) then
-        dir = 3
-        xVelocity = playerVelocity
+    -- Draw crank indicator if crank is docked
+    if pd.isCrankDocked() then
+        pd.ui.crankIndicator:draw()
+    else
+        -- Calculate velocity from crank angle 
+        local crankPosition = pd.getCrankPosition() - 90
+        local xVelocity = math.cos(math.rad(crankPosition)) * playerVelocity
+        local yVelocity = math.sin(math.rad(crankPosition)) * playerVelocity
+        -- Move player
+        playerX += xVelocity
+        playerY += yVelocity
+        -- Loop player position
+        playerX = ring(playerX, -playerSize, 400 + playerSize)
+        playerY = ring(playerY, -playerSize, 240 + playerSize)
     end
-
-    -- Move player
-    playerX += xVelocity
-    playerY += yVelocity
-    -- Loop player position
-    playerX = ring(playerX, -playerSize, 400 + playerSize)
-    playerY = ring(playerY, -playerSize, 240 + playerSize)
+    -- Draw text
+    gfx.drawTextAligned("Template configured!", 200, 30, kTextAlignment.center)
     -- Draw player
     playerImage:drawAnchored(playerX, playerY, 0.5, 0.5)
 end
