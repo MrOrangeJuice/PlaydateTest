@@ -16,7 +16,8 @@ local gfx <const> = playdate.graphics
 local playerSize = 10
 local playerVelocity = 3
 local playerX, playerY = 200, 120
-local playerDir = 0;
+local playerDir = 0
+local accel = 0.5
 local xVelocity,yVelocity = 0, 0
 local dir = 0
 
@@ -64,17 +65,47 @@ function playdate.update()
     -- Calculate velocity from inputs
     if(iDown) then
         dir = 0
-        yVelocity = playerVelocity
     elseif(iLeft) then
         dir = 1
-        xVelocity = -playerVelocity
     elseif(iUp) then
         dir = 2
-        yVelocity = -playerVelocity
     elseif(iRight) then
         dir = 3
-        xVelocity = playerVelocity
     end
+
+    if(dir == 0) then
+        yVelocity += accel
+        if(xVelocity > 0) then
+            xVelocity -= accel
+        elseif(xVelocity < 0) then
+            xVelocity += accel
+        end
+    end
+    if(dir == 1) then
+        xVelocity -= accel
+        if(yVelocity > 0) then
+            yVelocity -= accel
+        elseif(yVelocity < 0) then
+            yVelocity += accel
+        end
+    end
+    if(dir == 2) then
+        yVelocity -= accel
+        if(xVelocity > 0) then
+            xVelocity -= accel
+        elseif(xVelocity < 0) then
+            xVelocity += accel
+        end
+    end
+    if(dir == 3) then
+        xVelocity += accel
+        if(yVelocity > 0) then
+            yVelocity -= accel
+        elseif(yVelocity < 0) then
+            yVelocity += accel
+        end
+    end
+    
 
     -- Move player
     playerX += xVelocity
