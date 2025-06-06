@@ -21,11 +21,14 @@ local accel = 0.5
 local burst = 2.5
 local xVelocity,yVelocity = 0, 0
 local dir = 0
+local enemyVelocity = 0.5
+local enemyAccel = 0.01
 
 -- Defining enemy variables
 local enemySize = 16
 local enemyX = {math.random(0,400),math.random(0,400),math.random(0,400),math.random(0,400)}
 local enemyY = {math.random(0,240),math.random(0,240),math.random(0,240),math.random(0,240)}
+local enemyDir = {math.random(0,360),math.random(0,360),math.random(0,360),math.random(0,360)}
 
 
 -- Drawing player image
@@ -147,6 +150,14 @@ function playdate.update()
     -- Loop player position
     playerX = ring(playerX, -playerSize, 400 + playerSize)
     playerY = ring(playerY, -playerSize, 240 + playerSize)
+
+    -- Move enemies
+    for i = 1,4,1
+    do 
+        enemyX[i] += math.cos(math.rad(enemyDir[i])) * playerVelocity
+        enemyY[i] += math.sin(math.rad(enemyDir[i])) * playerVelocity
+    end
+
     -- Loop enemy position
     for i = 1,4,1
     do 
